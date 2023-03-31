@@ -52,9 +52,10 @@ public class Funcionario implements Serializable {
 
     public void setDataNascimento(String dataNascimento) {
         LocalDate data;
-
+        
+    // LocalDate.parse(dataNascimento, "");
         data = LocalDate.parse(dataNascimento);
-        this.dataNascimento = data; ///
+        this.dataNascimento = data;
     }
 
     public String getCpf() {

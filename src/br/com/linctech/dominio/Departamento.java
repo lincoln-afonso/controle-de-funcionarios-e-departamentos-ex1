@@ -1,6 +1,9 @@
 package br.com.linctech.dominio;
 
-public class Departamento {
+import java.io.Serializable;
+
+public class Departamento implements Serializable {
+    private static final long serialVersionUID = 1L;
     private static final int TAM_NOME = 5;
     private static final int TAM_SIGLA = 3;
     private int codigo;
@@ -58,6 +61,11 @@ public class Departamento {
     }
 
     @Override
+    public String toString() {
+        return "Departamento [codigo=" + codigo + ", nome=" + nome + ", sigla=" + sigla + "]\n";
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -77,10 +85,5 @@ public class Departamento {
         if (codigo != other.codigo)
             return false;
         return true;
-    }
-    
-    @Override
-    public String toString() {
-        return "Departamento [codigo=" + codigo + ", nome=" + nome + ", sigla=" + sigla + "]\n";
-    }    
+    } 
 }

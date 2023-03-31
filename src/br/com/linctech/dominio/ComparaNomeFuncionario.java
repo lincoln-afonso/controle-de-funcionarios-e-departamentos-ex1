@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import br.com.linctech.dominio.Funcionario;
 
-public class ComparaNomeFuncionario implements Comparator<Funcionario> {
+public class ComparaNomeFuncionario implements Comparator<Funcionario>{
 
     @Override
     public int compare(Funcionario f1, Funcionario f2) {

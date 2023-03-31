@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class Serializador {
+    
     public static void gravar(Object object, String caminho) {
         try {
             FileOutputStream fileOutput = new FileOutputStream(caminho);
