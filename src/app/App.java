@@ -3,7 +3,6 @@ package app;
 import java.util.Set;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -165,8 +164,7 @@ public class App implements SistemaDeGerenciamento {
         String nome;
         String dataNascimento;
         String cpf;
-        double salario;
-        Departamento departamento;
+        String salario;
         Funcionario funcionario =  new Funcionario();
         boolean eValido;
 
@@ -201,15 +199,78 @@ public class App implements SistemaDeGerenciamento {
             System.out.print("Data de nascimento: ");
             dataNascimento = this.getLeia().nextLine();
             
-           // try {
+            try {
                 funcionario.setDataNascimento(dataNascimento);
                 eValido = true;
-           // } catch (DateTimeParseException e) {
+            } catch (DadoNaoInformadoException e) {
                 System.out.println("Data inválida!\n");
-           // }
+            } catch (DateTimeParseException e) {
+                System.out.println(e.getMessage());
+            }
         } while (eValido == false);
 
+        do {
+            eValido = false;
+            System.out.print("CPF: ");
+            cpf = this.getLeia().nextLine();
+
+            try {
+                funcionario.setCpf(cpf);
+                eValido = true;
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (eValido == false);
+
+        do {
+            eValido = false;
+            System.out.print("Salario: ");
+            salario = this.getLeia().nextLine();
+
+            try {
+                funcionario.setSalario(salario);
+                eValido = true;
+            } catch (DadoNaoInformadoException e) {
+                System.out.println(e.getMessage());
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
+            } catch (NumberFormatException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (eValido == false);
+
+        this.cadastrarDepartamento(setDepartamentos, funcionario);
+
         return setFuncionarios.add(funcionario);
+    }
+
+    private void cadastrarDepartamento(Set<Departamento> setDepartamentos, Funcionario funcionario) {
+        Departamento d = new Departamento();
+        boolean eValido;
+        String codigo;
+
+        do {
+            eValido = false;
+            System.out.print("Informe o código do departamento: ");
+            codigo = this.getLeia().nextLine();
+
+            try {
+                d.setCodigo(codigo);
+
+                d = this.pesquisaDepartamento(setDepartamentos, d);
+                if (d != null) {
+                    System.out.println(d);
+                    funcionario.setDepartamento(d);
+                    eValido = true;
+                }
+                else
+                    System.out.println("Departamento não encontrado, tente novamente!\n");
+            } catch (DadoNaoInformadoException e) {
+                System.out.println(e.getMessage());
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (eValido == false);
     }
 
     @Override
@@ -281,12 +342,17 @@ public class App implements SistemaDeGerenciamento {
                     break;
 
                 case "2":
-                    app.cadastrarFuncionario(setDepartamentos, setFuncionarios);
-                    System.out.println(setDepartamentos);
+                    if(app.cadastrarFuncionario(setDepartamentos, setFuncionarios)) {
+                        Serializador.gravar(setFuncionarios, App.getCaminhoFuncionario());
+                        System.out.println("Funcionário cadastrado!");
+                    }
+                    else 
+                        System.out.println("O funcionario informado se encontra cadastrado!");
                     break;
 
                 case "3":
-
+                    System.out.println(setDepartamentos + "\n\n");
+                    System.out.println(setFuncionarios);
                     break;
                 case "4":
 

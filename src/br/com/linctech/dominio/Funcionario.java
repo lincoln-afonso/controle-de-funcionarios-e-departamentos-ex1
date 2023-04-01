@@ -2,6 +2,7 @@ package br.com.linctech.dominio;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Funcionario implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -50,11 +51,10 @@ public class Funcionario implements Serializable {
         return dataNascimento.toString();
     }
 
-    public void setDataNascimento(String dataNascimento) {
+    public void setDataNascimento(String dataNascimento) throws DadoNaoInformadoException {
         LocalDate data;
         
-    // LocalDate.parse(dataNascimento, "");
-        data = LocalDate.parse(dataNascimento);
+        data = this.converterData(dataNascimento);
         this.dataNascimento = data;
     }
 
@@ -91,6 +91,15 @@ public class Funcionario implements Serializable {
 
     public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
+    }
+
+    private LocalDate converterData(String data) throws DadoNaoInformadoException {
+        if (data.isEmpty())
+            throw new DadoNaoInformadoException("A data de nascimento não foi informada!\n");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dataFormatada = LocalDate.parse(data, formatter);
+        return dataFormatada;
     }
 
     @Override
