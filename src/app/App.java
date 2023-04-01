@@ -4,10 +4,14 @@ import java.util.Set;
 import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 
+import br.com.linctech.dominio.ColecaoVaziaException;
 import br.com.linctech.dominio.DadoInvalidoException;
 import br.com.linctech.dominio.DadoNaoInformadoException;
 import br.com.linctech.dominio.Departamento;
@@ -245,15 +249,15 @@ public class App implements SistemaDeGerenciamento {
     }
 
     private void cadastrarDepartamento(Set<Departamento> setDepartamentos, Funcionario funcionario) {
-        Departamento d = new Departamento();
+        Departamento d;
         boolean eValido;
         String codigo;
 
         do {
+            d = new Departamento();
             eValido = false;
             System.out.print("Informe o código do departamento: ");
             codigo = this.getLeia().nextLine();
-
             try {
                 d.setCodigo(codigo);
 
@@ -300,12 +304,86 @@ public class App implements SistemaDeGerenciamento {
     }
 
     @Override
-    public boolean excluirFuncionario(Set<Funcionario> setFuncionarios) {
+    public boolean excluirFuncionario(Set<Funcionario> setFuncionarios) throws ColecaoVaziaException {
+        String matricula;
+        Funcionario funcionario = new Funcionario();
+        List<Funcionario> listFuncionarios = new ArrayList<>();
+        boolean eValido;
+
+        if (setFuncionarios.size() == 0)
+            throw new ColecaoVaziaException("Não há funcionários cadastrados!");
+
+        listFuncionarios.addAll(setFuncionarios);
+        do {
+            eValido = false;
+            System.out.print("Matrícula do funcionario desejado: ");
+            matricula = this.getLeia().nextLine();
+
+            try {
+                funcionario.setMatricula(matricula);
+                eValido = true;
+                funcionario = this.pesquisaFuncionario(setFuncionarios, funcionario);
+
+                /*int posicao;
+                posicao = listFuncionarios.indexOf(funcionario);
+                if (posicao >= 0) {
+                    setFuncionarios.remove(funcionario);
+                    return true;
+                }*/
+
+                if (funcionario != null) {
+                    setFuncionarios.remove(funcionario);
+                    return true;
+                }
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (eValido == false);
         return false;
     }
 
+    private void excluirFuncionario(Set<Funcionario> setFuncionarios, Departamento departamento) {
+        Funcionario f;
+        Iterator<Funcionario> funcionario = setFuncionarios.iterator();
+
+        while (funcionario.hasNext()) {
+            f = funcionario.next();
+            if (f.getDepartamento().getCodigo() == departamento.getCodigo())
+                setFuncionarios.remove(f);
+        }
+    }
+
     @Override
-    public boolean excluirDepartamento(Set<Departamento> setDepartamentos) {
+    public boolean excluirDepartamento(Set<Departamento> setDepartamentos, Set<Funcionario> setFuncionarios) throws ColecaoVaziaException {
+        String codigo;
+        Departamento departamento = new Departamento();
+        boolean eValido;
+
+        if (setDepartamentos.size() == 0)
+            throw new ColecaoVaziaException("Não há departamentos cadastrados!");
+
+        do {
+            eValido = false;
+            System.out.print("Codigo do departamento desejado: ");
+            codigo = this.getLeia().nextLine();
+
+        try {
+            departamento.setCodigo(codigo);
+            eValido = true;
+            
+            departamento = this.pesquisaDepartamento(setDepartamentos, departamento);
+            if (departamento != null) {
+                this.excluirFuncionario(setFuncionarios, departamento);
+                this.excluirFuncionario(setFuncionarios, departamento);
+                setDepartamentos.remove(departamento);
+                return true;
+            }
+        } catch (DadoNaoInformadoException e) {
+            System.out.println(e.getMessage());
+        } catch (DadoInvalidoException e) {
+            System.out.println(e.getMessage());
+        }
+    } while (eValido == false);
         return false;
     }
 
@@ -351,19 +429,37 @@ public class App implements SistemaDeGerenciamento {
                     break;
 
                 case "3":
-                    System.out.println(setDepartamentos + "\n\n");
-                    System.out.println(setFuncionarios);
+
                     break;
                 case "4":
 
                     break;
                 
                 case "5":
-
+                    try {
+                        if (app.excluirFuncionario(setFuncionarios)) {
+                            System.out.println("Funcionario excluído!\n");
+                            Serializador.gravar(setFuncionarios, App.getCaminhoFuncionario());
+                        }
+                        else
+                            System.out.println("Funcionário não cadastrado!\n");
+                    } catch(ColecaoVaziaException e) {
+                        System.out.println(e.getMessage());
+                    } 
                     break;
 
                  case "6":
-
+                    try {
+                        if (app.excluirDepartamento(setDepartamentos, setFuncionarios)) {
+                            System.out.println("Departamento excluído!\n");
+                            Serializador.gravar(setDepartamentos, App.getCaminhoDepartamento());
+                            Serializador.gravar(setFuncionarios, App.getCaminhoFuncionario());
+                        }
+                        else
+                            System.out.println("Departamento não cadastrado!\n");
+                    } catch(ColecaoVaziaException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
 
                 case "7":
@@ -371,7 +467,8 @@ public class App implements SistemaDeGerenciamento {
                     break;
 
                 case "8":
-
+                    System.out.println(setDepartamentos + "\n\n");
+                    System.out.println(setFuncionarios);
                     break;
                 
                 case "9":
