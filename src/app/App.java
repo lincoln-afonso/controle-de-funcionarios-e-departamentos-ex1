@@ -25,13 +25,11 @@ import br.com.linctech.dominio.SistemaDeGerenciamento;
  * Faça um programa que mostre o menu:
  * 1 – Cadastro de Departamento
  * 2 - Cadastro de Funcionários
- * 3 – Consulta de Funcionários
- * 4 – Funcionários de um Departamento
+ * 3 – Listar determinado Funcionário
+ * 4 – Listar Funcionários de um Departamento
  * 5 – Excluir Funcionário
  * 6 – Excluir Departamento
- * 7 –	Listar Departamentos
- * 8 – Listar Funcionários
- * 9 – Fim
+ * 7 – Fim
 
  * Cadastro de Departamento; cadastrar o código, nome e sigla de no máximo 20 departamentos. O
  * código é único e o nome não pode ser vazio.
@@ -388,13 +386,39 @@ public class App implements SistemaDeGerenciamento {
     }
 
     @Override
-    public void listarFuncionarios(Set<Funcionario> setFuncionarios) {
+    public boolean listarFuncionario(Set<Funcionario> setFuncionarios) {
+        String matricula;
+        Funcionario funcionario = new Funcionario(); 
+        boolean eValido;
 
+        do {
+            eValido = false;
+            System.out.println("Informe a matrícula: ");
+            matricula = this.getLeia().nextLine();
+
+            try {
+                funcionario.setMatricula(matricula);
+                eValido = true;
+
+                funcionario = this.pesquisaFuncionario(setFuncionarios, funcionario);
+                if (funcionario != null) {
+                    System.out.println("Dados do FUncionário");
+                    System.out.println("Matrícula: " + funcionario.getMatricula());
+                    System.out.println("Nome \tCPF \tData de Nascimento \tDepartamento \tSalario");
+                    System.out.print(funcionario.getMatricula() + "\t" + funcionario.getCpf() + "\t" + funcionario.getDepartamento().getNome());
+                    System.out.println("\t" + funcionario.getSalario() + "\n");
+                    return true;
+                }
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (eValido == false);
+        return false;
     }
 
     @Override
-    public void listarDepartamentos(Set<Departamento> setDepartamentos) {
-
+    public boolean listarDepartamentos(Set<Departamento> setDepartamentos) {
+        return false;
     }
 
     public static void main(String[] args) {
@@ -463,15 +487,6 @@ public class App implements SistemaDeGerenciamento {
                     break;
 
                 case "7":
-
-                    break;
-
-                case "8":
-                    System.out.println(setDepartamentos + "\n\n");
-                    System.out.println(setFuncionarios);
-                    break;
-                
-                case "9":
                     System.out.println("Programa Encerrado!\n");
                     break;
                 

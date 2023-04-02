@@ -14,9 +14,9 @@ public interface SistemaDeGerenciamento {
 
     public abstract boolean excluirFuncionario(Set<Funcionario> setFuncionarios);
 
-    public abstract boolean excluirDepartamento(Set<Departamento> setDepartamentos);
+    public abstract boolean excluirDepartamento(Set<Departamento> setDepartamentos, Set<Funcionario> setFuncionarios);
 
-    public abstract void listarFuncionarios(Set<Funcionario> setFuncionarios);
+    public abstract boolean listarFuncionario(Set<Funcionario> setFuncionarios);
 
-    public abstract void listarDepartamentos(Set<Departamento> setDepartamentos);
+    public abstract boolean listarDepartamentos(Set<Departamento> setDepartamentos);
 }
