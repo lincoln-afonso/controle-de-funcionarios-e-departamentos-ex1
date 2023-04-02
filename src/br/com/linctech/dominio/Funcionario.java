@@ -102,11 +102,18 @@ public class Funcionario implements Serializable {
         return dataFormatada;
     }
 
+
+
+    @Override
+    public String toString() {
+        return "Funcionario [cpf=" + cpf + ", dataNascimento=" + dataNascimento + ", departamento=" + departamento
+                + ", matricula=" + matricula + ", nome=" + nome + ", salario=" + salario + "]\n";
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((cpf == null) ? 0 : cpf.hashCode());
         result = prime * result + ((matricula == null) ? 0 : matricula.hashCode());
         return result;
     }
@@ -119,29 +126,12 @@ public class Funcionario implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-
         Funcionario other = (Funcionario) obj;
-
-        if (cpf == null) {
-            if (other.cpf != null)
-                return false;
-        } else if (!cpf.equals(other.cpf))
-            return false;
-
         if (matricula == null) {
             if (other.matricula != null)
                 return false;
-
         } else if (!matricula.equals(other.matricula))
             return false;
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "Funcionario [cpf=" + cpf + ", dataNascimento=" + dataNascimento + ", departamento=" + departamento
-                + ", matricula=" + matricula + ", nome=" + nome + ", salario=" + salario + "]\n";
-    }
-    
-    
 }

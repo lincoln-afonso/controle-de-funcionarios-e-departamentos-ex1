@@ -276,19 +276,6 @@ public class App implements SistemaDeGerenciamento {
     }
 
     @Override
-    public Funcionario pesquisaFuncionario(Set<Funcionario> setFuncionarios, Funcionario funcionario) {
-        Iterator<Funcionario> func = setFuncionarios.iterator();
-
-        while (func.hasNext()) {
-            Funcionario f;
-            f = func.next();
-            if (f.getMatricula().equalsIgnoreCase(funcionario.getMatricula()));
-                return f;
-        }
-        return null;
-    }
-
-    @Override
     public Departamento pesquisaDepartamento(Set<Departamento> setDepartamentos, Departamento departamento) {
         Iterator<Departamento> dep = setDepartamentos.iterator();
 
@@ -386,14 +373,30 @@ public class App implements SistemaDeGerenciamento {
     }
 
     @Override
+    public Funcionario pesquisaFuncionario(Set<Funcionario> setFuncionarios, Funcionario funcionario) {
+        Iterator<Funcionario> func = setFuncionarios.iterator();
+
+        while (func.hasNext()) {
+            Funcionario f;
+            f = func.next();
+            if (f.getMatricula().equals(funcionario.getMatricula()))
+                return f;
+        }
+        return null;
+    }
+
+    @Override
     public boolean listarFuncionario(Set<Funcionario> setFuncionarios) {
         String matricula;
-        Funcionario funcionario = new Funcionario(); 
+        Funcionario funcionario = new Funcionario();
         boolean eValido;
+
+        if (setFuncionarios.size() == 0)
+            throw new ColecaoVaziaException("Não há funcionários cadastrados!");
 
         do {
             eValido = false;
-            System.out.println("Informe a matrícula: ");
+            System.out.print("Informe a matrícula: ");
             matricula = this.getLeia().nextLine();
 
             try {
@@ -402,22 +405,17 @@ public class App implements SistemaDeGerenciamento {
 
                 funcionario = this.pesquisaFuncionario(setFuncionarios, funcionario);
                 if (funcionario != null) {
-                    System.out.println("Dados do FUncionário");
+                    System.out.println("\nDados do Funcionário");
                     System.out.println("Matrícula: " + funcionario.getMatricula());
-                    System.out.println("Nome \tCPF \tData de Nascimento \tDepartamento \tSalario");
-                    System.out.print(funcionario.getMatricula() + "\t" + funcionario.getCpf() + "\t" + funcionario.getDepartamento().getNome());
-                    System.out.println("\t" + funcionario.getSalario() + "\n");
+                    System.out.println("Nome \t\tCPF \t\tData de Nascimento \tDepartamento \tSalário");
+                    System.out.print(funcionario.getNome() + "\t\t" + funcionario.getCpf() + "\t");
+                    System.out.println(funcionario.getDataNascimento() + "\t\t" + funcionario.getDepartamento().getNome() + "\t" + funcionario.getSalario() + "\n");
                     return true;
                 }
             } catch (DadoInvalidoException e) {
                 System.out.println(e.getMessage());
             }
         } while (eValido == false);
-        return false;
-    }
-
-    @Override
-    public boolean listarDepartamentos(Set<Departamento> setDepartamentos) {
         return false;
     }
 
@@ -453,8 +451,15 @@ public class App implements SistemaDeGerenciamento {
                     break;
 
                 case "3":
+                    try {
+                        if (!app.listarFuncionario(setFuncionarios)) 
+                            System.out.println("Funcionário não cadastrado!\n");
 
+                    } catch (ColecaoVaziaException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
+
                 case "4":
 
                     break;
@@ -494,7 +499,7 @@ public class App implements SistemaDeGerenciamento {
                     System.out.println("Opção inválida!\n");
                     break;
             }
-        } while (!opcao.equals("9"));
+        } while (!opcao.equals("7"));
         app.getLeia().close();
     }
 }

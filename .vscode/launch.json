@@ -5,6 +5,13 @@
             "name": "CodeLens (Launch) - App",
             "request": "launch",
             "mainClass": "app.App",
+            "projectName": "controle-de-funcionarios-e-departamentos-ex1_d587e69a"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - App",
+            "request": "launch",
+            "mainClass": "app.App",
             "projectName": "controle-de-funcionarios-e-departamentos-ex1_a678a58"
         }
     ]
