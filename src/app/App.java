@@ -1,6 +1,7 @@
 package app;
 
 import java.util.Set;
+import java.util.TreeSet;
 import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import br.com.linctech.dominio.ColecaoVaziaException;
+import br.com.linctech.dominio.ComparaNomeFuncionario;
 import br.com.linctech.dominio.DadoInvalidoException;
 import br.com.linctech.dominio.DadoNaoInformadoException;
 import br.com.linctech.dominio.Departamento;
@@ -416,6 +418,39 @@ public class App implements SistemaDeGerenciamento {
                 System.out.println(e.getMessage());
             }
         } while (eValido == false);
+        return false;
+    }
+
+    public boolean listarFuncionarios(Set<Funcionario> setFuncionarios) {
+        String codigo;
+        Departamento departamento = new Departamento();
+        Funcionario funcionario = new funcionario();
+        boolean eValido;
+        Set<Funcionario> treeFuncionarios = new TreeSet<>(new ComparaNomeFuncionario());
+
+        if (setFuncionarios.size() == 0)
+            throw new ColecaoVaziaException("Não há funcionários cadastrados!");
+
+        do {
+            System.out.print("Informe o código do departemento: ");
+            codigo = this.getLeia().nextLine();
+
+            try {
+                departamento.setCodigo(codigo);
+                eValido = true;
+
+                treeFuncionarios.addAll(setFuncionarios);
+                Iterator<Funcionario> funcionario = treeFuncionarios.iterator();
+                while (funcionario.hasNext()) {
+
+                }
+
+            } catch (DadoNaoInformadoException e) {
+                System.out.println(e.getMessage());
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
+            }
+        while (eValido == false);
         return false;
     }
 
