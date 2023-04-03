@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -336,7 +335,7 @@ public class App implements SistemaDeGerenciamento {
         while (funcionario.hasNext()) {
             f = funcionario.next();
             if (f.getDepartamento().getCodigo() == departamento.getCodigo())
-                setFuncionarios.remove(f);
+                setFuncionarios.remove(f); //resolver problema aqui
         }
     }
 
@@ -354,23 +353,23 @@ public class App implements SistemaDeGerenciamento {
             System.out.print("Codigo do departamento desejado: ");
             codigo = this.getLeia().nextLine();
 
-        try {
-            departamento.setCodigo(codigo);
-            eValido = true;
-            
-            departamento = this.pesquisaDepartamento(setDepartamentos, departamento);
-            if (departamento != null) {
-                this.excluirFuncionario(setFuncionarios, departamento);
-                this.excluirFuncionario(setFuncionarios, departamento);
-                setDepartamentos.remove(departamento);
-                return true;
+            try {
+                departamento.setCodigo(codigo);
+                eValido = true;
+                
+                departamento = this.pesquisaDepartamento(setDepartamentos, departamento);
+                System.out.println(departamento + "\n\n");
+                if (departamento != null) {
+                    this.excluirFuncionario(setFuncionarios, departamento);
+                    setDepartamentos.remove(departamento);
+                    return true;
+                }
+            } catch (DadoNaoInformadoException e) {
+                System.out.println(e.getMessage());
+            } catch (DadoInvalidoException e) {
+                System.out.println(e.getMessage());
             }
-        } catch (DadoNaoInformadoException e) {
-            System.out.println(e.getMessage());
-        } catch (DadoInvalidoException e) {
-            System.out.println(e.getMessage());
-        }
-    } while (eValido == false);
+        } while (eValido == false);
         return false;
     }
 
@@ -420,18 +419,24 @@ public class App implements SistemaDeGerenciamento {
         } while (eValido == false);
         return false;
     }
-
-    public boolean listarFuncionarios(Set<Funcionario> setFuncionarios) {
+    
+    @Override
+    public boolean listarFuncionarios(Set<Funcionario> setFuncionarios, Set<Departamento> setDepartamentos) throws ColecaoVaziaException {
         String codigo;
         Departamento departamento = new Departamento();
-        Funcionario funcionario = new funcionario();
+        Funcionario funcionario = new Funcionario();
         boolean eValido;
+        boolean encontrou = false;
+
         Set<Funcionario> treeFuncionarios = new TreeSet<>(new ComparaNomeFuncionario());
 
+        if (setDepartamentos.size() == 0)
+            throw new ColecaoVaziaException("Não há departamentos cadastrados!");
         if (setFuncionarios.size() == 0)
             throw new ColecaoVaziaException("Não há funcionários cadastrados!");
 
         do {
+            eValido = false;
             System.out.print("Informe o código do departemento: ");
             codigo = this.getLeia().nextLine();
 
@@ -440,18 +445,27 @@ public class App implements SistemaDeGerenciamento {
                 eValido = true;
 
                 treeFuncionarios.addAll(setFuncionarios);
-                Iterator<Funcionario> funcionario = treeFuncionarios.iterator();
-                while (funcionario.hasNext()) {
 
+                Iterator<Funcionario> func = treeFuncionarios.iterator();
+                while (func.hasNext()) {
+                    funcionario = func.next();
+                    if (funcionario.getDepartamento().getCodigo() == departamento.getCodigo()) {
+                        if (encontrou == false) {
+                            encontrou = true;
+                            System.out.println("Matrícula \tNome \tCPF \t\tSalário \tDepartamento");
+                        }
+                        System.out.print(funcionario.getMatricula() + "\t" + funcionario.getNome() + "\t");
+                        System.out.println(funcionario.getCpf() + "\t" + funcionario.getSalario() + "\t\t" + funcionario.getDepartamento().getNome());
+                    }
                 }
-
+                System.out.println();
             } catch (DadoNaoInformadoException e) {
                 System.out.println(e.getMessage());
             } catch (DadoInvalidoException e) {
                 System.out.println(e.getMessage());
             }
-        while (eValido == false);
-        return false;
+        } while (eValido == false);
+        return encontrou;
     }
 
     public static void main(String[] args) {
@@ -496,7 +510,12 @@ public class App implements SistemaDeGerenciamento {
                     break;
 
                 case "4":
-
+                    try {
+                        if (!app.listarFuncionarios(setFuncionarios, setDepartamentos))
+                            System.out.println("O código informado não pertence a nenhum departamento ou não há funcionários no departamento informado!\n");
+                    } catch (ColecaoVaziaException e) {
+                        System.out.println(e.getMessage());
+                    }
                     break;
                 
                 case "5":
@@ -536,5 +555,7 @@ public class App implements SistemaDeGerenciamento {
             }
         } while (!opcao.equals("7"));
         app.getLeia().close();
+        System.out.println(setDepartamentos);
+        System.out.println("\n" + setFuncionarios);
     }
 }
