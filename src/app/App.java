@@ -334,8 +334,9 @@ public class App implements SistemaDeGerenciamento {
 
         while (funcionario.hasNext()) {
             f = funcionario.next();
-            if (f.getDepartamento().getCodigo() == departamento.getCodigo())
-                setFuncionarios.remove(f); //resolver problema aqui
+            if (f.getDepartamento().getCodigo() == departamento.getCodigo()) {
+                setFuncionarios.remove(f); 
+            }
         }
     }
 
@@ -345,6 +346,7 @@ public class App implements SistemaDeGerenciamento {
         Departamento departamento = new Departamento();
         boolean eValido;
 
+        System.out.println(setDepartamentos.size());
         if (setDepartamentos.size() == 0)
             throw new ColecaoVaziaException("Não há departamentos cadastrados!");
 
@@ -556,6 +558,5 @@ public class App implements SistemaDeGerenciamento {
         } while (!opcao.equals("7"));
         app.getLeia().close();
         System.out.println(setDepartamentos);
-        System.out.println("\n" + setFuncionarios);
     }
 }
